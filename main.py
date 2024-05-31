@@ -3,15 +3,30 @@ import speech_recognition as sr
 import webbrowser
 import random
 # using data.py for storing and using variables in it.
-from data import sites, exit_greetings, welcome_greetings, welcome_responses, applications,modules
+from data import sites, exit_greetings, welcome_greetings, responses, applications,modules,num,questions
 from camera import use_camera;
 import sys
 import subprocess
 import datetime
 # using config.py for storing and using variables in it.
-from config import api_key
+from config import google_search, install_module
+import requests
+from googlesearch import search
+import re
 
-def say(text, rate=180):
+def google_search(query):
+    """
+    Open a web browser with Google search page populated with the provided query.
+
+    Args:
+        query (str): The search query string.
+    """
+    search_url = f"https://www.google.com/search?q={query}"
+    webbrowser.open(search_url)
+
+
+
+def say(text, rate=182):
     os.system(f'say -r {rate} {text}')
 
 def user_input():
@@ -47,11 +62,12 @@ def welcom_program():
     return welcome_greeting
 
 def welcome_responses():
-    response=random.choice(welcome_responses)
-    return(response)
+    return random.choice(responses)
 
 def current_time():
     h=datetime.datetime.now().strftime("%H")
+    if (int(h)==00):
+        h=12
     if(int(h)>12):
         h=int(h)-12
     else:
@@ -60,30 +76,14 @@ def current_time():
     strtime=(f"Current time is: {h}:{m}")
     return strtime
 
-def install_module(module_name):
-    """
-    Install a Python module using pip.
-    
-    :param module_name: The name of the module to install.
-    """
-    try:
-        subprocess.run(["pip", "install", module_name], check=True)
-        print(f"Module {module_name} installed successfully.")
-        say(f"Module {module_name} installed successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to install module {module_name}: {e}")
-        say(f"Failed to install module {module_name}.")
-
 say(welcom_program())
-
+n1 = None
+n2 = None
 while True:
-
     query=user_input()
-    found=False
-    m=False
     if query is not None:
         if f"exit".lower() in query.lower():
-            say(exit_program())
+            say(f"{exit_program()}...")
             exit()
             
         elif f"time".lower() in query.lower():
@@ -93,22 +93,33 @@ while True:
         elif f"camera".lower() in query.lower():
             say(f"Opening Camera sir.")
             use_camera()
-
+        
         elif f"thank".lower() in query.lower():
-            print(welcome_responses())
-            say(welcome_responses())
+            say(f"{welcome_responses()}")
+        
+        for n in num:
+            if f" {str(n)}" in query.lower():
+                numbers = re.findall(r'\d+', query)
+                num1 = int(numbers[0])
+                num2 = int(numbers[1])
+                result = num1 + num2
+                print(result)
+                say(result)
 
         for site in sites:
             if f"open {site[0]}".lower() in query.lower():
                 say(f"Opening {site[0]} sir.")
                 webbrowser.open(site[1])
-                found=True
                 break
 
         for module in modules:
-            if f"install {module[0]}".lower() in query.lower():
-                say(f"installing {module[0]} in your mac sir")
-                install_module(module[0])
-                m=True
-                break        
-
+            if f"install {module}".lower() in query.lower():
+                say(f"installing {module} in your mac sir")
+                install_module(module)
+                break 
+        
+        for question in questions:
+            if question.lower() in query.lower():
+                results = google_search(query)
+                say(f"Finding on google..")
+                break
