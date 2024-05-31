@@ -119,7 +119,7 @@ welcome_greetings = [
     "Hello, sir!"
 ]
 
-welcome_responses = [
+responses = [
     "You're welcome!",
     "No problem!",
     "My pleasure!",
@@ -310,5 +310,15 @@ modules = [
     "google-auth",
     "google-auth-httplib2",
     "google-auth-oauthlib",
-    "google-auth-google-auth-library"
+    "google-auth-google-auth-library",
+    "openai",
+    "speechrecognition",
+    "gtts"
 ]
+
+num=[]
+
+for i in range(0,1001):
+    num.append(i)
+
+questions=["What", "When", "How", "Where"]
